@@ -9,6 +9,7 @@ import { Injectable } from '@nestjs/common';
 import { OptionsDto } from '../paginator/dto/options.dto';
 import { MetaDto } from '../paginator/dto/meta.dto';
 import { PaginatorDto } from '../paginator/dto/paginator.dto';
+import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
 
 @Injectable()
 export class BookmarksService {
@@ -23,8 +24,8 @@ export class BookmarksService {
       .leftJoinAndSelect('bookmarks.tags', 'tags');
   }
 
-  findOne(id: string): Promise<Bookmark> {
-    return this._repo
+  async findOne(id: string): Promise<Bookmark> {
+    return await this._repo
       .createQueryBuilder('bookmarks')
       .where('bookmarks.$id = :id', {
         id,
@@ -48,17 +49,15 @@ export class BookmarksService {
     return new PaginatorDto(entities, metaDto);
   }
 
-  update(id: number, updateDto: UpdateDto) {
-    this._repo.update(id, updateDto);
-    return 'Update';
+  async update(id: number, updateDto: UpdateDto): Promise<UpdateResult> {
+    return await this._repo.update(id, updateDto);
   }
 
-  remove(id: number) {
-    this._repo.softDelete(id);
-    return 'Remove';
+  async remove(id: number): Promise<UpdateResult> {
+    return await this._repo.softDelete(id);
   }
 
-  create(createDto: CreateDto) {
+  async create(createDto: CreateDto): Promise<any> {
     const bookmark = new Bookmark();
 
     bookmark.url = createDto.url;
@@ -68,11 +67,6 @@ export class BookmarksService {
     bookmark.md5 = md5(createDto.url);
     bookmark.tags = createDto.tags;
 
-    this._repo.save(bookmark).catch((e) => {
-      // @todo
-      console.log(e.message);
-    });
-
-    return 'Create';
+    return await this._repo.save(bookmark);
   }
 }

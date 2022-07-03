@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -14,6 +16,7 @@ import { CreateDto } from './dto/create.dto';
 import { UpdateDto } from './dto/update.dto';
 import { OptionsDto } from '../paginator/dto/options.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UpdateResult } from 'typeorm/query-builder/result/UpdateResult';
 
 @Controller('bookmarks')
 export class BookmarksController {
@@ -31,21 +34,29 @@ export class BookmarksController {
   }
 
   @Patch(':id')
-  update(@Body() updateDto: UpdateDto, @Param('id') id: string) {
-    console.log(id, updateDto);
-    this.bookmarksService.update(parseInt(id), updateDto);
-    return 'This action update bookmark ' + id;
+  async update(
+    @Body() updateDto: UpdateDto,
+    @Param('id') id: string,
+  ): Promise<UpdateResult> {
+    return this.bookmarksService.update(parseInt(id), updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    this.bookmarksService.remove(parseInt(id));
-    return 'This action remove bookmark ' + id;
+  async remove(@Param('id') id: string): Promise<UpdateResult> {
+    return await this.bookmarksService.remove(parseInt(id));
   }
 
   @Post()
-  create(@Body() createDto: CreateDto): string {
-    this.bookmarksService.create(createDto);
-    return 'This action adds a new bookmark';
+  async create(@Body() createDto: CreateDto): Promise<any> {
+    return await this.bookmarksService.create(createDto).catch((e) => {
+      if (
+        e.message ===
+        'SqliteError: UNIQUE constraint failed: bookmarks__bookmark.md5'
+      ) {
+        throw new HttpException('Bookmark exists', HttpStatus.CONFLICT);
+      } else {
+        throw e;
+      }
+    });
   }
 }
