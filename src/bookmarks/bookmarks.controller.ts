@@ -28,12 +28,12 @@ export class BookmarksController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
     return await this.bookmarksService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   async update(
     @Body() updateDto: UpdateDto,
     @Param('id') id: string,
@@ -42,11 +42,13 @@ export class BookmarksController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string): Promise<UpdateResult> {
     return await this.bookmarksService.remove(parseInt(id));
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   async create(@Body() createDto: CreateDto): Promise<any> {
     return await this.bookmarksService.create(createDto).catch((e) => {
       if (
