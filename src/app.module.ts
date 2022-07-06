@@ -6,6 +6,7 @@ import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { PaginatorModule } from './paginator/paginator.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
     PaginatorModule,
     AuthModule,
     UsersModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
