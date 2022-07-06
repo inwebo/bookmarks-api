@@ -1,3 +1,1 @@
-export class ReadDto {
-
-}
+export class ReadDto {}
