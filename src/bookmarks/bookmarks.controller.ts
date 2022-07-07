@@ -33,7 +33,7 @@ export class BookmarksController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   async update(
     @Body() updateDto: UpdateDto,
     @Param('id') id: string,
